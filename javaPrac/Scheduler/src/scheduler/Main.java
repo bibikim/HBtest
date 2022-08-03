@@ -3,7 +3,9 @@ package scheduler;
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
+		//WeekScheduluer scheduler = new WeekScheduler(15);
+		//scheduler.manage();
 
 	}
 
