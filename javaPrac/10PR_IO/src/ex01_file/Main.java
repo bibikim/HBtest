@@ -63,7 +63,6 @@ public class Main {
 
 	}
 	
-	
 	public static void m3() {
 		
 		File file = new File("d:\\space", "less.txt");

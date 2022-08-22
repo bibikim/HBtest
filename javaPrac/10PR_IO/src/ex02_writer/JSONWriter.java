@@ -167,7 +167,6 @@ public class JSONWriter {
 			}
 		}
 		
-		
 	}
 	
 	public static void m6() {
