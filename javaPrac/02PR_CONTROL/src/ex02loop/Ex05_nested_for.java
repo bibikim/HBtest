@@ -9,14 +9,14 @@ public class Ex05_nested_for {
 		// 1일차 1교시
 		// 1일차 2교시
 		// ...
-		// 1일차 8교시
+		// 1일차 5교시
 		// 2일차 1교시
 		// ...
-		// 3일차 8교시
-		// 1~3 for문, 1~8 for문 2중으로 중첩
+		// 3일차 5교시
+		// 1~3 for문, 1~5 for문 2중으로 중첩
 		
 		for(int day = 1; day <= 3; day++) {
-			for(int h = 1; h <= 8; h++) {
+			for(int h = 1; h <= 5; h++) {
 				System.out.println(day + "일차 " + h + "교시");
 			}
 		}
@@ -25,13 +25,14 @@ public class Ex05_nested_for {
 		// 전체 구구단.
 		for(int n = 2; n<=9; n++) {
 			for(int b = 1; b <= 9; b++) {
-				System.out.println(n + "x" + b + "=" + (n*b));
+				System.out.print(n + "x" + b + "=" + (n*b) + "\t");
 			}
+			System.out.println();
 		}
 		
 		for(int n = 2; n <= 5; n++) {
 			for(int m = 1; m <= 9; m++) {
-				System.out.println(n + "x" + m + "=" + (n*m));
+				System.out.println(n + "x" + m + "=" + (n*m) + "\t");
 				if(n == 5 && m == 5) {
 					break;
 				}

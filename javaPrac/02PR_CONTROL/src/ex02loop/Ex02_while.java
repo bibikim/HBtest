@@ -11,11 +11,11 @@ public class Ex02_while {
 		//					실행문
 		// }
 		
-		int balance = 458900;
-		int money = 400;
+		int balance = 25000;
+		int money = 3000;
 		
 		while(balance >= money) {
-				System.out.println("잔액 " + balance + "인출금 " + money);
+				System.out.println("잔액 " + balance + "원, 인출금 " + money);
 				balance -= money;
 		}
 		System.out.println(balance);

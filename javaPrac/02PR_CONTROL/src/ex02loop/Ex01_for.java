@@ -34,8 +34,8 @@ public class Ex01_for {
 		// 연습.
 		// 1 ~ 100 사이의 모든 3의 배수만 출력하기
 		
-		for(int t = 1; t <= 100; t++) {
-			if(t % 3 == 0) {
+		for(int t = 1; t <= 80; t++) {
+			if(t % 7 == 0) {
 				System.out.print(t + " ");
 			}
 		}
@@ -77,7 +77,16 @@ public class Ex01_for {
 			 star += "★";
 		 }
 		 System.out.println(star);
-			
+		 
+		 
+	    String star1 = "";
+	    	for(int n = 1; n <= 5; n++) {
+	        	for(int m = 0; m < n; m++) {
+	          		System.out.print("★");
+	          }
+	          System.out.println(star1);
+	    	}
+	  	
 			
 			
 	}

@@ -11,7 +11,7 @@ public class Ex03_break {
 		// 모금 목표 : 200000원
 		// 한번에 500원씩 모금
 		int total = 0;
-		int money = 600;
+		int money = 7000;
 		int serial = 0;
 		int goal = 200000;
 		
