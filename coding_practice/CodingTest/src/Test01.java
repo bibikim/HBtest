@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class test01 {
+public class Test01 {
 
 	// 백준 피보나치 수 5 ( n번째 피보나치 수 구하기 )
 	public static int solution(int n) {

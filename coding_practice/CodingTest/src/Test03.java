@@ -1,4 +1,4 @@
-public class test03 {
+public class Test03 {
 
 	// 프로그래머스 7의 개수
     public static int solution(int[] array) {
@@ -21,7 +21,7 @@ public class test03 {
             String[] b = a.split("");  // ex) b = [7, 10, 19, 27, 37, 67, 77];
             						   // ref) a.split();을 해버리면 기준 없이 그대로 출력하기 때문에 공백 기준("")을 꼭 넣어주어야 한다
             
-            // Stringp[] b 배열의 길이만큼 for문 돌려서
+            // String[] b 배열의 길이만큼 for문 돌려서
             for(int j = 0; j < b.length; j++) {
             	// b의 요소 중에 문자열 7을 포함하는 요소가 있다면
                 if(b[j].contains("7")) {

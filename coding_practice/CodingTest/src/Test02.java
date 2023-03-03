@@ -1,4 +1,4 @@
-public class test02 {
+public class Test02 {
 
 	
 	// 프로그래머스 편지

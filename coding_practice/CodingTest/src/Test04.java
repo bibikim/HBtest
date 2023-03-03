@@ -1,5 +1,5 @@
 
-public class test04 {
+public class Test04 {
 
 	// 프로그래머스 나머지가 1이 되는 수 찾기
 	public static int solution(int n) {
