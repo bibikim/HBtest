@@ -6,10 +6,52 @@
 
 <mapper namespace="com.khb.pay.mapper.CourseMapper">
 
-	<select id="selectList" parameterType="Map" resultType="CourseDTO">
-		SELECT *
-		  FROM COURSE
-		 ORDER BY COURSE_NO DESC
+	<!-- course테이블과 thumbnail테이블 조인을 위한 resultMap -->
+	<resultMap type="CourseDTO" id="CourseMap">
+		<id column="COURSE_NO" property="courseNo"/>
+		<result column="CO_TITLE" property="coTitle"/>
+		<result column="C0_INTRO" property="coIntro"/>
+		<result column="CO_CTNT" property="coCtnt"/>
+		<result column="CO_PRICE" property="coPrice"/>
+		<result column="CO_TEACHER" property="coTeacher"/>
+		<result column="UPLOAD_DATE" property="uploadDate"/>
+		<association property="thumbnail" javaType="ThumbnailDTO">
+			<id column="THUMBIMAGE_NO" property="thumbimageNo"/>
+			<result column="COURSE_NO" property="courseNo"/>
+			<result column="THUMBIMAGE_PATH" property="thumbnailPath"/>
+			<result column="THUMBIMAGE_ORIGIN" property="thumbnailOrigin"/>
+			<result column="FILESYSTEM" property="filesystem"/>
+			<result column="HAS_THUMBNAIL" property="hasThumbnail"/>
+		</association>
+	</resultMap>
+
+	<select id="selectCourseListByMap" parameterType="Map" resultType="CourseDTO">
+		SELECT C.COURSE_NO, C.CO_TITLE, C.C0_INTRO, C.CO_CTNT, C.CO_PRICE, C.CO_TEACHER, C.UPLOAD_DATE, T.HAS_THUMBNAIL
+		  FROM COURSE C LEFT OUTER JOIN THUMBNAIL T
+		    ON C.COURSE_NO = T.COURSE_NO
+		 ORDER BY C.COURSE_NO DESC
+		 LIMIT #{begin}, #{recordPerPage}
 	</select>
 
+	<!-- 강의 글쓰기 -->
+	<insert id="insertCourse" parameterType="CourseDTO">
+		INSERT INTO COURSE
+			(COURSE_NO, CO_TITLE, C0_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE)
+		VALUES
+			(#{courseNo}, #{coTitle}, #{coIntro}, #{coCtnt}, #{coPrice}, #{coTeacher}, NOW())
+	</insert>
+	
+	<!-- 목록에서 썸네일 보기 -->
+	<select id="selectThumbnailList" parameterType="int" resultType="ThumbnailDTO">
+		SELECT THUMBIMAGE_NO, COURSE_NO, THUMBIMAGE_PATH, THUMBIMAGE_ORIGIN, FILESYSTEM, HAS_THUMBNAIL
+		  FROM THUMBNAIL
+		 WHERE COURSE_NO = #{courseNo}
+	</select>
+	
+	<delete id="deleteCourse" parameterType="int">
+		DELETE 
+		  FROM COURSE
+		 WHERE COURSE_NO = #{courseNo}
+	</delete>
+	
 </mapper>

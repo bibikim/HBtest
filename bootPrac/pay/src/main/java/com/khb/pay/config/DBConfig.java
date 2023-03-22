@@ -59,20 +59,20 @@ public class DBConfig {
 	// mybatis 사용 위한 세팅
 	@Bean
 	public SqlSessionFactory factory() throws Exception {
-		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-		bean.setDataSource(dataSource());  // connectionPool 정보 넘기기
-		bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResource(mapperLocations));  // mybatis-mapper 위치
-		bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource(configLocation));	// mybatis-config 위치
+		SqlSessionFactoryBean bean  = new SqlSessionFactoryBean();
+		bean.setDataSource(dataSource());  // conncetionPool 정보 넘겨주기.    hikariCP가 지원하는 datasource
+		bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperLocations));   // mapper.xml 위치 // mapper가 여러개가 나올 것이므로 es!
+		bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource(configLocation));  // mybatis-config.xml의 위치 // config
 		return bean.getObject();
 	}
 	
 	@Bean
 	public SqlSessionTemplate sqlSessionTemplate() throws Exception {
-		return new SqlSessionTemplate(factory());
+		return new SqlSessionTemplate(factory()); 
 	}
 	
 	@Bean
-	public TransactionManager transactionManager() {
+	public TransactionManager transactionManger() {
 		return new DataSourceTransactionManager(dataSource());
 	}
 }
