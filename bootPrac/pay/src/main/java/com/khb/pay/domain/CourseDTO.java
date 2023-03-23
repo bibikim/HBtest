@@ -20,4 +20,10 @@ public class CourseDTO {
 	private String price;
 	private String coTeacher;
 	private Date uploadDate;
+
+	private String thumbPath;
+	private String thumbOrigin;
+	private String filesystem;
+	private int hasThumbnail;
+
 }
