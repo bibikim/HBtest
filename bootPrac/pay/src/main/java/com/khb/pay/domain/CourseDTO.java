@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CourseDTO {
 
-	private int cousreNo;
+	private int courseNo;
 	private String coTitle;
 	private String coIntro;
 	private String coCtnt;

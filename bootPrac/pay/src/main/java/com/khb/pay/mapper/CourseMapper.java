@@ -12,6 +12,8 @@ public interface CourseMapper {
 
 	// 1. 강의 목록 조회
 	public List<CourseDTO> selectCourseListByMap();
+	public int selectCousrCnt();
+	
 	
 	// 2. 강의 상세 조회(COURSE DTO 한개) & 썸네일 조회
 	public CourseDTO selectCourseByNo(int coursNo);

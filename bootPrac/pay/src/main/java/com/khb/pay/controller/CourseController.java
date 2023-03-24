@@ -20,6 +20,9 @@ public class CourseController {
 	public String index() {
 		return "index";
 	}
+	/*
+	 * @GetMapping("/course/list") public String list()
+	 */
 	
 	//@GetMapping(value="/courses/page/{page}", produces="application/json")
 	//public Map<K, V>

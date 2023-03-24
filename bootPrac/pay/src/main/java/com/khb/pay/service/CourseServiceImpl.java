@@ -1,33 +1,182 @@
 package com.khb.pay.service;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.lang.StackWalker.Option;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.khb.pay.domain.CourseDTO;
 import com.khb.pay.mapper.CourseMapper;
+import com.khb.pay.util.MyFileUtil;
+import com.khb.pay.util.PageUtil;
 
+import lombok.AllArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
+
+@AllArgsConstructor
 @Service
 public class CourseServiceImpl implements CourseService {
 
-	@Autowired
 	private CourseMapper courseMapper;
+	private MyFileUtil fileUtil;
+	private PageUtil pageUtil;
+	
+	@Override
+	public void getCourseList(Model model) {
+		
+		Map<String, Object> modelMap = model.asMap();
+		HttpServletRequest request = (HttpServletRequest)modelMap.get("request");
+		
+		Optional<String> opt = Optional.ofNullable(request.getParameter("page"));
+		int page = Integer.parseInt(opt.orElse("1"));
+		
+		int totalRecord = courseMapper.selectCousrCnt();
+		
+		pageUtil.setPageUtil(page, totalRecord);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("begin", pageUtil.getBegin() -1);
+		map.put("recordPerPage", pageUtil.getRecordPerPage());
+		
+		
+	}
 	
 	
 	@Override
-	public List<CourseDTO> getCourseList() {
-		return courseMapper.selectCourseListByMap();
+	public CourseDTO getCourseByNo(int courseNo) {
+		return courseMapper.selectCourseByNo(courseNo);
 	}
+	
+	@Override
+	public void saveCourse(MultipartHttpServletRequest multirequest, HttpServletResponse response) {
+		
+		CourseDTO course = CourseDTO.builder()
+				.coTitle(multirequest.getParameter("coTitle"))
+				.coIntro(multirequest.getParameter("coIntro"))
+				.coCtnt(multirequest.getParameter("coCtnt"))
+				.price(multirequest.getParameter("price"))
+				.coTeacher(multirequest.getParameter("coTeacher"))
+				.build();
+		
+		int result = courseMapper.insertCourse(course);
+	
+		
+		// 썸네일용 이미지 첨부
+		List<MultipartFile> files = multirequest.getFiles("files");
+		
+		int attachResult;
+		if(files.get(0).getSize() == 0) {
+			attachResult = 1;
+		} else {
+			attachResult = 0;
+		}
+	
+		// 첨부 파일 목록 순회
+		for(MultipartFile multiFile : files) {
+			
+			try {
+				
+				// 첨부가 있는지 점검
+				if(multiFile != null && multiFile.isEmpty() == false) {
+					
+					// 원래 이름
+					String thumbOrigin = multiFile.getOriginalFilename();
+					thumbOrigin = thumbOrigin.substring(thumbOrigin.lastIndexOf("\\") + 1);
+					
+					// 저장할 이름
+					String filesystem = fileUtil.getFilename(thumbOrigin);
+					
+					// 저장할 경로
+					String thumbPath = fileUtil.getTodayPath();
+					
+					// 저장 경로 만들기
+					File dir = new File(thumbPath);
+					if(dir.exists() == false) {
+						dir.mkdirs();
+					}
+					
+					// 첨부할 File 객체
+					File file = new File(dir, filesystem);
+					
+					// 첨부파일 서버에 저장
+					multiFile.transferTo(file);
+					
+					// 이지미 담기위해 다시 CourseDTO 생성
+					CourseDTO courseAttach = CourseDTO.builder()
+							.thumbOrigin(thumbOrigin)
+							.thumbPath(thumbPath)
+							.filesystem(filesystem)
+							.hasThumbnail(0)	// 썸네일 디폴트 0(썸네일 없다)
+							.courseNo(course.getCourseNo())
+							.build();
+					
+					// 첨부 파일 content-type 확인
+					String contentType = Files.probeContentType(file.toPath());  // 이미지의 content-type (image/jpeg, image/png, image/gif)
+					
+					// 첨부파일이 이미지면 썸네일 만든당
+					if(contentType != null && contentType.startsWith("image")) {
+						
+						// 썸네일 서버에 저장
+						Thumbnails.of(file)
+								.size(50, 50)
+								.toFile(new File(dir, "s_" + filesystem));  
+						
+						// 썸네일이 있는 첨부로 상태 변경
+						courseAttach.setHasThumbnail(1);	// 이미지 첨부가 있으면 hasThumbnail을 1로 변경(썸네일 있다)
+						
+					}
+					
+					attachResult += courseMapper.insertCourse(course);
+					
+				}
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+		// 응답
+		try {
+			
+			response.setContentType("text/html; charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			
+			if(result > 0 && attachResult == files.size()) {
+				out.println("<script>");
+				out.println("alert('업로드 되었습니다.');");
+				out.println("location.href='/course/list'");
+				out.println("</script>");
+			} else {
+				out.println("<script>");
+				out.println("alert('업로드에 실패했습니다.');");
+				out.println("history.back();");
+				out.println("</script>");
+			}
+			out.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	
 	@Override
 	public ResponseEntity<byte[]> displayThumbnail(int courseNo) {
@@ -56,28 +205,9 @@ public class CourseServiceImpl implements CourseService {
 		return result;
 	}
 	
-	@Override
-	public CourseDTO getCourseByNo(int courseNo) {
-		return courseMapper.selectCourseByNo(courseNo);
-	}
 	
-	@Override
-	public void saveCourse(HttpServletRequest request, HttpServletResponse response) {
-		
-		CourseDTO course = CourseDTO.builder()
-				.coTitle(request.getParameter("coTitle"))
-				.coIntro(request.getParameter("coIntro"))
-				.coCtnt(request.getParameter("coCtnt"))
-				.price(request.getParameter("price"))
-				.coTeacher(request.getParameter("coTeacher"))
-				.build();
-		
-		int result = courseMapper.insertCourse(course);
-		
-		// 썸네일용 이미지 첨부
-		
-		
-		
-	}
+	
+	
+	
 	
 }

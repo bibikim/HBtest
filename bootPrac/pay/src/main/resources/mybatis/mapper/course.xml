@@ -5,12 +5,18 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.khb.pay.mapper.CourseMapper">
-
+	
+	<!-- 강의 목록 -->
 	<select id="selectCourseListByMap" parameterType="Map" resultType="CourseDTO">
 		SELECT COURSE_NO, CO_TITLE, C0_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSEM, HAS_THUMBNAIL
 		  FROM COURSE
 		 ORDER BY COURSE_NO DESC
 		 LIMIT #{begin}, #{recordPerPage}
+	</select>
+	
+	<select id="selectCousrCnt" resultType="int">
+		SELECT COUNT(*)
+		  FROM COURSE
 	</select>
 	
 	<!-- 강의 상세 -->
