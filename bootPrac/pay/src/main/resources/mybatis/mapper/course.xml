@@ -8,7 +8,7 @@
 	
 	<!-- 강의 목록 -->
 	<select id="selectCourseListByMap" parameterType="Map" resultType="CourseDTO">
-		SELECT COURSE_NO, CO_TITLE, C0_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSEM, HAS_THUMBNAIL
+		SELECT COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSTEM, HAS_THUMBNAIL
 		  FROM COURSE
 		 ORDER BY COURSE_NO DESC
 		 LIMIT #{begin}, #{recordPerPage}
@@ -21,7 +21,7 @@
 	
 	<!-- 강의 상세 -->
 	<select id="selectCourseByNo" parameterType="int" resultType="CourseDTO">
-		SELECT COURSE_NO, CO_TITLE, C0_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSEM, HAS_THUMBNAIL
+		SELECT COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSTEM, HAS_THUMBNAIL
 		  FROM COURSE
 		 WHERE COURSE_NO = #{courseNo}
 	</select>
@@ -29,7 +29,7 @@
 	<!-- 강의 글쓰기 -->
 	<insert id="insertCourse" parameterType="CourseDTO">
 		INSERT INTO COURSE
-			(COURSE_NO, CO_TITLE, C0_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSEM, HAS_THUMBNAIL)
+			(COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSTEM, HAS_THUMBNAIL)
 		VALUES
 			(#{courseNo}, #{coTitle}, #{coIntro}, #{coCtnt}, #{coPrice}, #{coTeacher}, NOW(), #{thumbPath}, #{thumbOrigin}, #{filesystem}, #{hasThumbnail})
 	</insert>
@@ -43,7 +43,7 @@
 	
 	<update id="updateCourse" parameterType="CourseDTO" >
 		UPDATE
-		   SET CO_TITLE = #{coTitle}, C0_INTRO = #{coIntro}, CO_CTNT =  #{coCtnt}, CO_PRICE = #{coPrice}, CO_TEACHER = #{coTeacher}
+		   SET CO_TITLE = #{coTitle}, CO_INTRO = #{coIntro}, CO_CTNT =  #{coCtnt}, CO_PRICE = #{coPrice}, CO_TEACHER = #{coTeacher}
 		 WHERE COURSE_NO = #{courseNo}
 	</update>
 	

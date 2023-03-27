@@ -11,7 +11,7 @@ import com.khb.pay.domain.CourseDTO;
 public interface CourseMapper {
 
 	// 1. 강의 목록 조회
-	public List<CourseDTO> selectCourseListByMap();
+	public List<CourseDTO> selectCourseListByMap(Map<String, Object> map);
 	public int selectCousrCnt();
 	
 	

@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<script src="${contextPath}/resources/js/jquery-3.6.1.min.js"></script>
+<script src="/resources/js/jquery-3.6.1.min.js"></script>
 </head>
 <body>
 	<a href="/course/list">강의</a>

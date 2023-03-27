@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,10 +51,16 @@ public class CourseServiceImpl implements CourseService {
 		
 		pageUtil.setPageUtil(page, totalRecord);
 		
-		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("begin", pageUtil.getBegin() -1);
 		map.put("recordPerPage", pageUtil.getRecordPerPage());
 		
+		model.addAttribute("totalRecord", totalRecord);
+		model.addAttribute("beginNo", totalRecord - (page-1) * pageUtil.getRecordPerPage());
+		model.addAttribute("paging", pageUtil.getPaging("/course/list"));
+		
+		List<CourseDTO>	course = courseMapper.selectCourseListByMap(map);
+		model.addAttribute("courseList", course);
 		
 	}
 	
@@ -63,6 +70,7 @@ public class CourseServiceImpl implements CourseService {
 		return courseMapper.selectCourseByNo(courseNo);
 	}
 	
+	@Transactional
 	@Override
 	public void saveCourse(MultipartHttpServletRequest multirequest, HttpServletResponse response) {
 		
@@ -70,15 +78,13 @@ public class CourseServiceImpl implements CourseService {
 				.coTitle(multirequest.getParameter("coTitle"))
 				.coIntro(multirequest.getParameter("coIntro"))
 				.coCtnt(multirequest.getParameter("coCtnt"))
-				.price(multirequest.getParameter("price"))
+				.coPrice(multirequest.getParameter("price"))
 				.coTeacher(multirequest.getParameter("coTeacher"))
 				.build();
 		
-		int result = courseMapper.insertCourse(course);
-	
 		
-		// 썸네일용 이미지 첨부
-		List<MultipartFile> files = multirequest.getFiles("files");
+		// 썸네일용 이미지 받아오기
+		List<MultipartFile> files = multirequest.getFiles("file");
 		
 		int attachResult;
 		if(files.get(0).getSize() == 0) {
@@ -86,7 +92,10 @@ public class CourseServiceImpl implements CourseService {
 		} else {
 			attachResult = 0;
 		}
-	
+		
+		// DB에 강의 정보 저장
+		int result = courseMapper.insertCourse(course);
+		
 		// 첨부 파일 목록 순회
 		for(MultipartFile multiFile : files) {
 			

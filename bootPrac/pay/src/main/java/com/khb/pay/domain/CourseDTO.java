@@ -17,7 +17,7 @@ public class CourseDTO {
 	private String coTitle;
 	private String coIntro;
 	private String coCtnt;
-	private String price;
+	private String coPrice;
 	private String coTeacher;
 	private Date uploadDate;
 
