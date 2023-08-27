@@ -17,13 +17,9 @@ public class CourseDTO {
 	private String coTitle;
 	private String coIntro;
 	private String coCtnt;
-	private String coPrice;
-	private String coTeacher;
+	private String price;
+	private String teacher;
 	private Date uploadDate;
 
-	private String thumbPath;
-	private String thumbOrigin;
-	private String filesystem;
-	private int hasThumbnail;
 
 }

@@ -23,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.khb.pay.domain.CourseDTO;
+import com.khb.pay.domain.CourseImgDTO;
 import com.khb.pay.mapper.CourseMapper;
 import com.khb.pay.util.MyFileUtil;
 import com.khb.pay.util.PageUtil;
 
 import lombok.AllArgsConstructor;
+import net.coobird.thumbnailator.Thumbnailator;
 import net.coobird.thumbnailator.Thumbnails;
 
 @AllArgsConstructor
@@ -70,16 +72,17 @@ public class CourseServiceImpl implements CourseService {
 		return courseMapper.selectCourseByNo(courseNo);
 	}
 	
+	
 	@Transactional
 	@Override
-	public void saveCourse(MultipartHttpServletRequest multirequest, HttpServletResponse response) {
+	public void saveCourseImg(MultipartHttpServletRequest multirequest, HttpServletResponse response) {
 		
-		CourseDTO course = CourseDTO.builder()
-				.coTitle(multirequest.getParameter("coTitle"))
-				.coIntro(multirequest.getParameter("coIntro"))
-				.coCtnt(multirequest.getParameter("coCtnt"))
-				.coPrice(multirequest.getParameter("price"))
-				.coTeacher(multirequest.getParameter("coTeacher"))
+		CourseImgDTO courseImg = CourseImgDTO.builder()
+				.courseNo(Integer.parseInt(multirequest.getParameter("courseNo")))
+				.imgPath(multirequest.getParameter("imgPath"))
+				.imgOrigin(multirequest.getParameter("imgOrigin"))
+				.filesystem(multirequest.getParameter("filesystem"))
+				.hasThumbnail(Integer.parseInt(multirequest.getParameter("hasThumbnail")))
 				.build();
 		
 		
@@ -105,17 +108,17 @@ public class CourseServiceImpl implements CourseService {
 				if(multiFile != null && multiFile.isEmpty() == false) {
 					
 					// 원래 이름
-					String thumbOrigin = multiFile.getOriginalFilename();
-					thumbOrigin = thumbOrigin.substring(thumbOrigin.lastIndexOf("\\") + 1);
+					String imgOrigin = multiFile.getOriginalFilename();
+					imgOrigin = imgOrigin.substring(imgOrigin.lastIndexOf("\\") + 1);
 					
 					// 저장할 이름
-					String filesystem = fileUtil.getFilename(thumbOrigin);
+					String filesystem = fileUtil.getFilename(imgOrigin);
 					
 					// 저장할 경로
-					String thumbPath = fileUtil.getTodayPath();
+					String imgPath = fileUtil.getTodayPath();
 					
 					// 저장 경로 만들기
-					File dir = new File(thumbPath);
+					File dir = new File(imgPath);
 					if(dir.exists() == false) {
 						dir.mkdirs();
 					}
@@ -127,12 +130,12 @@ public class CourseServiceImpl implements CourseService {
 					multiFile.transferTo(file);
 					
 					// 이지미 담기위해 다시 CourseDTO 생성
-					CourseDTO courseAttach = CourseDTO.builder()
-							.thumbOrigin(thumbOrigin)
-							.thumbPath(thumbPath)
+					CourseImgDTO courseAttach = CourseImgDTO.builder()
+							.imgOrigin(imgOrigin)
+							.imgPath(imgPath)
 							.filesystem(filesystem)
 							.hasThumbnail(0)	// 썸네일 디폴트 0(썸네일 없다)
-							.courseNo(course.getCourseNo())
+							.courseNo(courseImg.getCourseNo())
 							.build();
 					
 					// 첨부 파일 content-type 확인
@@ -190,8 +193,8 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public ResponseEntity<byte[]> displayThumbnail(int courseNo) {
 		
-		CourseDTO course = courseMapper.selectCourseByNo(courseNo);
-		File file = new File(course.getThumbPath(), course.getFilesystem());
+		CourseImgDTO course = courseMapper.selectCourseByNo(courseNo);
+		File file = new File(course.getImgPath(), course.getFilesystem());
 		
 		ResponseEntity<byte[]> result = null;
 		

@@ -6,32 +6,53 @@
 
 <mapper namespace="com.khb.pay.mapper.CourseMapper">
 	
+	<resultMap type="CourseDTO" id="CourseMap">
+			<id property="courseNo" column="COURSE_NO"/>
+			<result property="coTitle" column="CO_TITLE"/>
+			<result property="coIntro" column="CO_INTRO"/>
+			<result property="coCtnt" column="CO_CTNT"/>
+			<result property="price" column="PRICE"/>
+			<result property="teacher" column="TEACHER"/>
+			<result property="uploadDate" column="UPLOAD_DATE"/>
+			<association property="courseImg" javaType="CourseImgDTO">
+				<id property="imgNo" column="IMG_NO"/>
+				<result property="courseNo" column="COURSE_NO"/>
+				<result property="imgPath" column="IMG_PATH"/>
+				<result property="imgOrigin" column="IMG_ORIGIN"/>
+				<result property="filesystem" column="FILESYSTEM"/>
+				<result property="hasThumbnail" column="HAS_THUMBNAIL"/>
+			</association>
+	</resultMap>
+	
 	<!-- 강의 목록 -->
-	<select id="selectCourseListByMap" parameterType="Map" resultType="CourseDTO">
-		SELECT COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSTEM, HAS_THUMBNAIL
-		  FROM COURSE
-		 ORDER BY COURSE_NO DESC
+	<select id="selectCourseListByMap" parameterType="Map" resultMap="CourseMap">
+		SELECT C.COURSE_NO, C.CO_TITLE, C.CO_INTRO, C.CO_CTNT, C.PRICE, C.TEACHER, C.UPLOAD_DATE, I.HAS_THUMBNAIL
+		  FROM COURSE C LEFT OUTER JOIN COURSE_IMG I
+		    ON C.COURSE_NO = I.COURSE_NO
+		 ORDER BY C.COURSE_NO DESC
 		 LIMIT #{begin}, #{recordPerPage}
 	</select>
 	
 	<select id="selectCousrCnt" resultType="int">
-		SELECT COUNT(*)
+		SELECT COUNT(COURSE_NO)
 		  FROM COURSE
 	</select>
 	
-	<!-- 강의 상세 -->
+	<!-- 강의 상세 : 상세화면 -->
 	<select id="selectCourseByNo" parameterType="int" resultType="CourseDTO">
-		SELECT COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSTEM, HAS_THUMBNAIL
+		SELECT COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, PRICE, TEACHER, UPLOAD_DATE
 		  FROM COURSE
 		 WHERE COURSE_NO = #{courseNo}
 	</select>
+	
+	
 
 	<!-- 강의 글쓰기 -->
-	<insert id="insertCourse" parameterType="CourseDTO">
+	<insert id="insertCourse" parameterType="CourseDTO" useGeneratedKeys="true" keyProperty="courseNo">
 		INSERT INTO COURSE
-			(COURSE_NO, CO_TITLE, CO_INTRO, CO_CTNT, CO_PRICE, CO_TEACHER, UPLOAD_DATE, THUMB_PATH, THUMB_ORIGIN, FILESYSTEM, HAS_THUMBNAIL)
+			(CO_TITLE, CO_INTRO, CO_CTNT, PRICE, TEACHER, UPLOAD_DATE)
 		VALUES
-			(#{courseNo}, #{coTitle}, #{coIntro}, #{coCtnt}, #{coPrice}, #{coTeacher}, NOW(), #{thumbPath}, #{thumbOrigin}, #{filesystem}, #{hasThumbnail})
+			(#{coTitle}, #{coIntro}, #{coCtnt}, #{price}, #{teacher}, NOW())
 	</insert>
 	
 	
@@ -43,8 +64,30 @@
 	
 	<update id="updateCourse" parameterType="CourseDTO" >
 		UPDATE
-		   SET CO_TITLE = #{coTitle}, CO_INTRO = #{coIntro}, CO_CTNT =  #{coCtnt}, CO_PRICE = #{coPrice}, CO_TEACHER = #{coTeacher}
+		   SET CO_TITLE = #{coTitle}, CO_INTRO = #{coIntro}, CO_CTNT =  #{coCtnt}, PRICE = #{price}, TEACHER = #{teacher}
 		 WHERE COURSE_NO = #{courseNo}
 	</update>
+	
+	
+	<!-- 이미지 상세 : 이미지 불러오기 & 썸네일 불러오기 -->
+	<select id="selectImgByNo" resultType="CourseImgDTO" parameterType="int">
+		SELECT IMG_NO, COURSE_NO, IMG_PATH, IMG_ORIGIN, FILESYSTEM, HAS_THUMBNAIL
+		  FROM COURSE_IMG
+		 WHERE COURSE_NO = #{courseNo}
+	</select>
+	
+	<!-- 이미지 삽입 & 썸네일 설정 -->
+	<insert id="insertImg" parameterType="CourseImgDTO">
+		INSERT INTO COURSE_IMG (COURSE_NO, IMG_PATH, IMG_ORIGIN, FILESYSTEM, HAS_THUMBNAIL)
+			VALUES (#{courseNo}, #{imgPath}, #{imgOrigin}, #{filesystem}, #{hasThumbnail})
+	</insert>
+	
+	<!-- 이미지 삭제 -->
+	<delete id="deleteImg" parameterType="String">
+		DELETE 
+		  FROM COURSE_IMG
+		 WHERE FILESYSTEM = #{filesystem} 
+	</delete>
+	
 	
 </mapper>

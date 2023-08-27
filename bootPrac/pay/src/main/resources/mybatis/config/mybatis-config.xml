@@ -12,7 +12,7 @@
 	
 	<typeAliases>
 		<typeAlias type="com.khb.pay.domain.CourseDTO" alias="CourseDTO"/>
-		<typeAlias type="com.khb.pay.domain.ThumbnailDTO" alias="ThumbnailDTO"/>
+		<typeAlias type="com.khb.pay.domain.CourseImgDTO" alias="CourseImgDTO"/>
 		<typeAlias type="com.khb.pay.domain.PayDTO" alias="PayDTO"/>
 	</typeAliases>
 	

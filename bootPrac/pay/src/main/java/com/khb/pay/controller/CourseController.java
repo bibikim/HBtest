@@ -38,10 +38,11 @@ public class CourseController {
 		return "course/write";
 	}
 	
-	@PostMapping("/course/add")
-	public void add(MultipartHttpServletRequest multiRequest, HttpServletResponse response) {
-		courseService.saveCourse(multiRequest, response);
-	}
+	/*
+	 * @PostMapping("/course/add") public void add(MultipartHttpServletRequest
+	 * multiRequest, HttpServletResponse response) {
+	 * courseService.saveCourse(multiRequest, response); }
+	 */
 	
 	@ResponseBody
 	@GetMapping("/course/display")
